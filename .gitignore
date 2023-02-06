@@ -1,3 +1,5 @@
 /__pycache__
 /.pytest_cache
+/pages/__pycache__
+/pages/.pytest_cache
 /environments
