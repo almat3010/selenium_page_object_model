@@ -25,14 +25,14 @@ class BasePage():
             return False
         return True
 
-    def is_not_element_present(self, by, selector, timeout=4):
+    def is_not_element_present(self, by, selector, timeout=7):
         try:
             WebDriverWait(self.browser, timeout).until(EC.presence_of_element_located((by, selector)))
         except TimeoutException:
             return True
         return False
 
-    def is_disappeared(self, by, selector, timeout=4):
+    def is_disappeared(self, by, selector, timeout=7):
         try:
             WebDriverWait(self.browser, timeout, 1, TimeoutException).\
                 until_not(EC.presence_of_element_located((by, selector)))
@@ -51,17 +51,22 @@ class BasePage():
     def should_be_login_link(self):
         assert self.is_element_present(*BasePageLocators.LOGIN_LINK), "Login link is not presented"
 
+    def should_be_authorized_user(self):
+        assert self.is_element_present(*BasePageLocators.USER_ICON), "User icon is not presented, probably unauthorised user"
+
     def solve_quiz_and_get_code(self):
-        alert = self.browser.switch_to.alert
-        x = alert.text.split(" ")[2]
-        answer = str(math.log(abs((12 * math.sin(float(x))))))
-        alert.send_keys(answer)
-        alert.accept()
         try:
             alert = self.browser.switch_to.alert
-            alert_text = alert.text
-            print(f"Your code: {alert_text}")
+            x = alert.text.split(" ")[2]
+            answer = str(math.log(abs((12 * math.sin(float(x))))))
+            alert.send_keys(answer)
             alert.accept()
-            return alert_text
         except NoAlertPresentException:
-            print("No second alert presented")
+            print("No first alert presented")
+            try:
+                alert = self.browser.switch_to.alert
+                alert_text = alert.text
+                print(f"Your code: {alert_text}")
+                alert.accept()
+            except NoAlertPresentException:
+                print("No second alert presented")
